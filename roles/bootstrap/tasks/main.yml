@@ -19,5 +19,10 @@
 - name: argument validation
   include_tasks: assert.yml
 
-- name: bootstrap 
+- name: remove repo files with no baseurl
+  include_tasks: remove-emtpy-repos.yml
+  loop: "{{ files }}"
+  when: files | length > 0
+
+- name: bootstrap
   include_tasks: bootstrap.yml
