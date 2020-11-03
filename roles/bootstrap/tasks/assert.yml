@@ -96,10 +96,11 @@
       Authorization:  "{{ sat_token }}"
   register:           os_arg
   
-- shell:   "grep -riL 'baseurl'"
+- shell:         "/usr/bin/grep -riL 'baseurl'"
   args:
-    chdir: "/etc/yum.repos.d/"
-  register: files
+    chdir:       "/etc/yum.repos.d/"
+  ignore_errors: true
+  register:      files
 
 - set_fact:
     files: "{{ files.stdout_lines }}"
