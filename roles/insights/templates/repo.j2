@@ -7,11 +7,17 @@
 [rhel-{{ ansible_distribution_major_version }}-server-rpms]
 enabled = 1
 name = empty_insights_server_repo
+skip_if_unavailable = 1
+keepcache = 0
 
 [rhel-{{ ansible_distribution_major_version }}-server-eus-rpms]
 enabled = 1
-name = Empty_insights_eus_repo.
+name = Empty_insights_eus_repo
+skip_if_unavailable = 1
+keepcache = 0
 
 [rhel-server-rhscl-{{ ansible_distribution_major_version }}-rpms]
 enabled = 1
-name = Empty_insights_rhscl_repo.
+name = Empty_insights_rhscl_repo
+skip_if_unavailable = 1
+keepcache = 0
