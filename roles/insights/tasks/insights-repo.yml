@@ -23,4 +23,3 @@
     mode: 600
     attr: +a
   register: repo
-  changed_when: "'a' not in repo.diff.
