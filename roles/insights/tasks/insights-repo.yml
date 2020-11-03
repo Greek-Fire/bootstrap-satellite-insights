@@ -14,9 +14,6 @@
 ##     See the License for the specific language governing permissions and
 ##     limitations under the License.
 ##
-- name: rename old file
-  command: mv /etc/yum.repos.d/insights.repo /etc/yum.repos.d/insights.repo.bak
-
 - name: add insighst repo
   template:
     src: repo.j2

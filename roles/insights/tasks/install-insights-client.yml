@@ -1,0 +1,7 @@
+- yum:
+    name:       insights-client
+    enablerepo: "{{ temp-insights-repoid }}"
+    state:      present
+
+- yum:
+    disablerepo: "{{ temp-insights-repoid }}"
