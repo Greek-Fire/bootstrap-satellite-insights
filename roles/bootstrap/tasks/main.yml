@@ -1,0 +1,8 @@
+---
+# tasks file for bootstrap
+
+- name: argument validation
+  include_tasks: assert.yml
+
+- name: bootstrap 
+  include_tasks: bootstrap.yml

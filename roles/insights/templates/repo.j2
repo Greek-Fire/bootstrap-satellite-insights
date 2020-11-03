@@ -1,0 +1,17 @@
+# DO NOT DELTE, or alter any entries this file!
+# Appending to this file is authorized
+# This repo file will not affect your current patching cyle
+# There is no BASEURL. Therefore, no packages from these repos will be used during any yum/rpm operations
+# These repos are need for insights to report accurate CVE and RHSA data
+
+[rhel-{{ ansible_distribution_major_version }}-server-rpms]
+enabled = 1
+name = empty_insights_server_repo
+
+[rhel-{{ ansible_distribution_major_version }}-server-eus-rpms]
+enabled = 1
+name = Empty_insights_eus_repo.
+
+[rhel-server-rhscl-{{ ansible_distribution_major_version }}-rpms]
+enabled = 1
+name = Empty_insights_rhscl_repo.

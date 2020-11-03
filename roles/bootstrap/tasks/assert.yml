@@ -1,0 +1,100 @@
+- name: set user:password
+  set_fact: 
+    combine: "{{satellite_username}}:{{satellite_password}}"
+  no_log:    true
+
+- name: encode user:password
+  set_fact:
+     sat_token: "Basic {{combine | string | b64encode }}" 
+
+- name: validate organization
+  uri:
+    url:              "https://{{ satellite_fqdn }}/katello/api/organizations?search={{ bootstrap_org }}"
+    method:           GET
+    headers:
+      Authorization:  "{{ sat_token }}"
+  register:           org_arg
+  no_log:             true
+
+- assert:
+    that: 
+    - org_arg.json.results | selectattr('name', 'match', bootstrap_org) | list | length == 1
+    fail_msg: >
+       boostrap_org "does not exist in Satellite. OR
+       if nested, make sure to add the full path.
+       For example, for a nested hostgroup, OS/RHEL7
+       would be the full path."
+
+- name: validate location 
+  uri:
+    url:              "https://{{ satellite_fqdn }}/api/locations?search={{ bootstrap_location }}"
+    method:           GET
+    headers:
+      Authorization:  "{{ sat_token }}"
+  register:           location_arg
+  no_log:             true
+
+- assert:
+    that:
+    - location_arg.json.results | selectattr('name', 'match', bootstrap_location) | list | length == 1
+    fail_msg: boostrap_location "does not exist in Satellite"
+
+- name: validate hostgroup
+  uri:
+    url:              "https://{{ satellite_fqdn }}/api/hostgroups?search={{ bootstrap_hostgroup }}"
+    method:           GET 
+    headers:
+      Authorization:  "{{ sat_token }}"
+  register:           hostgroup_arg
+  no_log:           true
+
+- assert:
+    that:
+    - hostgroup_arg.json.results | selectattr('name', 'match', bootstrap_hostgroup) | list | length == 1
+    fail_msg: bootstrap_hostgroup "does not exist in Satellite"
+
+- name: validate activation keys
+  uri:
+    url:              "https://{{ satellite_fqdn }}/katello/api/organizations/{{ org_arg.json.results[0]['id'] }}/activation_keys?search={{ bootstrap_activationkey }}"
+    method:           GET 
+    headers:
+      Authorization:  "{{ sat_token }}"
+  register:           activationkey_arg
+  no_log:           true
+
+- assert:
+    that:
+    - activationkey_arg.json.results | selectattr('name', 'match', bootstrap_activationkey) | list | length == 1
+    fail_msg: activationkey_arg "does not exist in Satellite"
+
+- set_fact:
+    OS:           "{{ ansible_os_family }} {{ ansible_distribution_major_version }}.{{ ansible_distribution_version[2] }}"
+
+- name: validate operating system
+  uri:
+    url:            "https://{{ satellite_fqdn }}/api/operatingsystems?search={{ bootstrap_os | urlencode }}"
+    method:           GET
+    headers:
+      Authorization:  "{{ sat_token }}"
+  register:           os_arg
+
+- block:
+  - set_fact:
+      set_os:    "{{ OS if (os_arg.json.results | selectattr('title', 'match', OS) | list | length == 0) else bootstrap_os }}" 
+      os_hash: 
+        name:    "{{ ansible_os_family }}"
+        major:   "{{ ansible_distribution_major_version }}"
+        minor:   "{{ ansible_distribution_version[2] }}"
+        family:  "{{ ansible_os_family }}"
+
+  - name:
+    uri:
+      url:              "https://{{ satellite_fqdn }}/api/operatingsystems/" 
+      body_format:      json
+      method:           POST
+      status_code:      422,200
+      headers:
+        Authorization:  "{{ sat_token }}"
+      body:
+        operatingsystem: "{{ os_hash }}"
+  when: os_arg.json.results | selectattr('title', 'match', OS) | list | length == 0
