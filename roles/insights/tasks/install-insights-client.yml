@@ -14,7 +14,9 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
-
+- setup:
+  when: ( ansible_distribution_major_version is not defined )
+  
 - yum:
     name:       insights-client
     enablerepo: "{{ temp_insights_repoid }}"
