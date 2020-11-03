@@ -1,0 +1,7 @@
+- file:
+    path:  "/etc/yum.repos.d/{{ item }}"
+    attr:  -a
+
+- file:
+    path:  "/etc/yum.repos.d/{{ item }}"
+    state: absent
