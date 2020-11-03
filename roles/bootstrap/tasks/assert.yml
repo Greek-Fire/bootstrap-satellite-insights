@@ -95,6 +95,8 @@
     headers:
       Authorization:  "{{ sat_token }}"
   register:           os_arg
+  
+- setup:
 
 - block:
   - set_fact:
