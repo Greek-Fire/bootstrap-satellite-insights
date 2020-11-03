@@ -23,6 +23,7 @@
 - name: encode user:password
   set_fact:
      sat_token: "Basic {{combine | string | b64encode }}" 
+  no_log:       true
 
 - name: validate organization
   uri:
