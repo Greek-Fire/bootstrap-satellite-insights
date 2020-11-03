@@ -36,4 +36,4 @@
 - set_fact:
     rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) }}"
     katello_cert: "{{ katello_cert.results[0].name.split() }}"
-    files:        "{{ files.stdout_lines }}"
+    files:        "{{ files.stdout_lines | default([]) }}"
