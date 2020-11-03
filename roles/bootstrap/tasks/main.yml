@@ -30,4 +30,4 @@
 
 - name: bootstrap
   include_tasks: bootstrap.yml
-  when: ( rhsm | length > 0 ) and ( katello_cert | length > 0 )
+  when: ( rhsm | length == 0 and katello_cert | length == 0 )
