@@ -21,12 +21,6 @@
     url: "{{ bootstrap_download_method }}://{{ satellite_fqdn }}/pub/bootstrap.py"
   when: not bootstrap_local_copy
 
-- name: copy bootstrap.py from local machine
-  copy:
-    dest: "{{ bootstrap_target_path }}"
-    src: bootstrap.py
-  when: bootstrap_local_copy
-
 - name: generate bootstrap.py arguments
   set_fact:
     bootstrap_args: "--server {{ satellite_fqdn }} --organization '{{ bootstrap_org }}' --location '{{ bootstrap_location }}' --activationkey '{{ bootstrap_activationkey }}' --operatingsystem '{{ set_os }}'  --download-method {{ bootstrap_download_method }}"
