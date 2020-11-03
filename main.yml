@@ -14,18 +14,11 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
-- name: pre-register check
-  include_tasks: pre-check.yml
 
-- name: remove repo files with no baseurl
-  include_tasks: remove-emtpy-repos.yml
-  loop: "{{ files }}"
-  when: files | length > 0
-
-- name: argument validation
-  include_tasks: assert.yml
-  when: ( rhsm | length == 0 and katello_cert | length == 0 )
-
-- name: bootstrap
-  include_tasks: bootstrap.yml
-  when: ( rhsm | length == 0 and katello_cert | length == 0 )
+- hosts: all
+  gather_facts: true
+  tasks:
+  - include_role:
+      name: bootstrap
+  - include_role:
+      name: insights
