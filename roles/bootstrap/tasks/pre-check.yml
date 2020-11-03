@@ -34,6 +34,6 @@
     rhsm_fqdn:    "hostname = {{ satellite_fqdn }}"
 
 - set_fact:
-    rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) }}"
-    katello_cert: "{{ katello_cert.results[0].name.split() }}"
+    rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) | default([]) }}"
+    katello_cert: "{{ katello_cert.results[0].name.split() | default([]) }}"
     files:        "{{ files.stdout_lines | default([]) }}"
