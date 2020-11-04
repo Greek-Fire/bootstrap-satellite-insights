@@ -22,12 +22,12 @@
 - name: remove repo files with no baseurl
   include_tasks: remove-emtpy-repos.yml
   loop: "{{ files }}"
-  when: files | length > 0
+  when: ( files_test > '0' )
 
 - name: argument validation
   include_tasks: assert.yml
-  when: ( rhsm | length == 0 and katello_cert | length == 0 )
+  when: ( rhsm == '0' ) or ( katello_cert == '0' )
 
 - name: bootstrap
   include_tasks: bootstrap.yml
-  when: ( rhsm | length == 0 and katello_cert | length == 0 )
+  when: ( rhsm == '0' ) or ( katello_cert == '0' )
