@@ -18,6 +18,16 @@
     path:  "/etc/yum.repos.d/{{ item }}"
     attr:  -a
 
+- set_fact:
+     re:    (?i)(enabled*.+1)
+     repl:  "enabled = 0\nskip_if_unavailable = 1"
+
+- name: add disable line to yum repo
+  replace:
+      path   : "/etc/yum.repos.d/{{ item }}"
+      regexp : "{{ re }}"
+      replace: "{{ iepl }}"
+      
 - file:
     path:  "/etc/yum.repos.d/{{ item }}"
-    state: absent
+    attr:  +a
