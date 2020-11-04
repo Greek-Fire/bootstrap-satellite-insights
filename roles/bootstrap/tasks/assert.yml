@@ -55,8 +55,12 @@
 - assert:
     that:
     - location_arg.json.results | selectattr('name', 'match', bootstrap_location) | list | length == 1
-    fail_msg: boostrap_location "does not exist in Satellite"
-
+    fail_msg: >
+       bootstrap_location "does not exist in Satellite. OR
+       if nested, make sure to add the full path.
+       For example, for a nested hostgroup, OS/RHEL7
+       would be the full path."
+       
 - name: validate hostgroup
   uri:
     url:              "https://{{ satellite_fqdn }}/api/hostgroups?search={{ bootstrap_hostgroup }}"
@@ -64,13 +68,17 @@
     headers:
       Authorization:  "{{ sat_token }}"
   register:           hostgroup_arg
-  no_log:           true
+  no_log:             true
 
 - assert:
     that:
     - hostgroup_arg.json.results | selectattr('name', 'match', bootstrap_hostgroup) | list | length == 1
-    fail_msg: bootstrap_hostgroup "does not exist in Satellite"
-
+    fail_msg: >
+       bootstrap_hostgroup "does not exist in Satellite. OR
+       if nested, make sure to add the full path.
+       For example, for a nested hostgroup, OS/RHEL7
+       would be the full path."
+       
 - name: validate activation keys
   uri:
     url:              "https://{{ satellite_fqdn }}/katello/api/organizations/{{ org_arg.json.results[0]['id'] }}/activation_keys?search={{ bootstrap_activationkey }}"
@@ -78,19 +86,25 @@
     headers:
       Authorization:  "{{ sat_token }}"
   register:           activationkey_arg
-  no_log:           true
+  no_log:             true
 
 - assert:
     that:
     - activationkey_arg.json.results | selectattr('name', 'match', bootstrap_activationkey) | list | length == 1
-    fail_msg: activationkey_arg "does not exist in Satellite"
+    fail_msg: > 
+       activationkey_arg "does not exist in Satellite. OR
+       if nested, make sure to add the full path.
+       For example, for a nested hostgroup, OS/RHEL7
+       would be the full path."
+       
 
 - name: validate operating system
   uri:
-    url:            "https://{{ satellite_fqdn }}/api/operatingsystems?search={{ bootstrap_os | urlencode }}"
+    url:              "https://{{ satellite_fqdn }}/api/operatingsystems?search={{ bootstrap_os | urlencode }}"
     method:           GET
     headers:
       Authorization:  "{{ sat_token }}"
+  no_log:             true
   register:           os_arg
   
 - setup:
@@ -116,4 +130,5 @@
         Authorization:  "{{ sat_token }}"
       body:
         operatingsystem: "{{ os_hash }}"
+    no_log: true
   when: os_arg.json.results | selectattr('title', 'match', OS) | list | length == 0
