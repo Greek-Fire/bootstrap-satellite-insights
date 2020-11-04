@@ -14,10 +14,15 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
+
 - name: check for katello-cert
   yum:
     list:   "katello-ca-consumer-{{ satellite_fqdn }}.noarch"
   register: katello_cert
+
+- set_fact:
+    katello_cert: "{{ katello_cert.results[0].name.split() | length }}"
+  when: ( katello_cert.results | length > 0 )
 
 - name: "check for {{ satellite_fqdn }} in /etc/rhsm/rhsm.conf"
   slurp:
@@ -34,6 +39,7 @@
     rhsm_fqdn:    "hostname = {{ satellite_fqdn }}"
 
 - set_fact:
-    rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) | default([]) }}"
-    katello_cert: "{{ katello_cert.results[0].name.split() | default([]) }}"
-    files:        "{{ files.stdout_lines | default([]) }}"
+    rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) | length | int}}"
+    katello_cert: "0"
+    files:        "{{ files.stdout_lines }}"
+    files_test:   "{{ files.stdout_lines | default([]) | length | int  }}"
