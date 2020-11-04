@@ -40,6 +40,6 @@
 
 - set_fact:
     rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) | length }}"
-    katello_cert: "{{ katello_cert.results | selectattr('name','defined') | selectattr('name','matches', kat_cert) | list | length }}"
+    katello_cert: "{{ katello_cert.results | selectattr('name','defined') | selectattr('name','match', kat_cert) | list | length }}"
     files:        "{{ files.stdout_lines }}"
     files_test:   "{{ files.stdout_lines | default([]) | length }}"
