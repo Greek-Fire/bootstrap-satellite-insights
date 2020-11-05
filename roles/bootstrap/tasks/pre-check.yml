@@ -20,10 +20,6 @@
     list:   "katello-ca-consumer-{{ satellite_fqdn }}.noarch"
   register: katello_cert
 
-- set_fact:
-    katello_cert: "{{ katello_cert.results[0].name.split() | length }}"
-  when: ( katello_cert.results | length > 0 )
-
 - name: "check for {{ satellite_fqdn }} in /etc/rhsm/rhsm.conf"
   slurp:
     src: /etc/rhsm/rhsm.conf
@@ -37,6 +33,7 @@
 
 - set_fact:
     rhsm_fqdn:    "hostname = {{ satellite_fqdn }}"
+    kat_cert:     "katello-ca-consumer-{{ satellite_fqdn }}"
 
 - set_fact:
     rhsm:         "{{ rhsm.content | b64decode | regex_findall(rhsm_fqdn) | length }}"
