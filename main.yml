@@ -16,6 +16,7 @@
 #
 
 - hosts: all
+  stragety: free
   gather_facts: false
   become: true
   tasks:
