@@ -34,7 +34,7 @@
 
 - name: run bootstrap.py
   command: "python {{ bootstrap_target_path }} {{ bootstrap_args }} {{ bootstrap_foreman_args }}"
-  when: bootstrap_additional_args is not defined
+  when: bootstrap_additional_args is not defined and inventory_hostname != satellite_fqdn
   no_log: true
 
 - name: remove bootstrap.py
