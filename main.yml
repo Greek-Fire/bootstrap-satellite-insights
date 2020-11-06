@@ -15,8 +15,8 @@
 #     limitations under the License.
 #
 
-- hosts: all
-  stragety: free
+- hosts: all  
+  strategy: free
   gather_facts: false
   become: true
   tasks:
