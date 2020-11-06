@@ -14,13 +14,31 @@
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
 #
-- setup:
-  when: ( ansible_distribution_major_version is not defined )
+- name: search for insights-client
+  package_facts:
+    manager: rpm
+  register: rpm_res
   
-- yum:
-    name:       insights-client
-    enablerepo: "{{ temp_insights_repoid }}"
-    state:      present
+- name: delete redaction files
+  file:
+    state: absent
+    dest: "{{ item }}"
+  loop:
+  - /etc/insights-client/file-redaction.yaml
+  - /etc/insights-client/file-content-redaction.yaml
+  when: rpm_res.ansible_facts.packages['insights-client'] | length > 0
+  
+- block:  
+  - name: remove weird file permissions
+    file:
+      attr: -a
+      dest: /etc/yum.repos.d/redhat.repo
+  
+  - yum:
+      name:       insights-client
+      enablerepo: "{{ temp_insights_repoid }}"
+      state:      present
 
-- yum:
-    disablerepo: "{{ temp_insights_repoid }}"
+  - yum:
+      disablerepo: "{{ temp_insights_repoid }}"    
+  when: rpm_res.ansible_facts.packages['insights-client'] | length == 0

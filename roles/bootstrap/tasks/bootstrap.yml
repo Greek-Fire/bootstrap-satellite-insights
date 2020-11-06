@@ -21,10 +21,16 @@
     url: "{{ bootstrap_download_method }}://{{ satellite_fqdn }}/pub/bootstrap.py"
   when: not bootstrap_local_copy
 
+- name: fix file attributes
+  file:
+    attr: -a
+    dest: /etc/yum.repos.d/redhat.repo
+
 - name: generate bootstrap.py arguments
   set_fact:
     bootstrap_args: "--server {{ satellite_fqdn }} --organization '{{ bootstrap_org }}' --location '{{ bootstrap_location }}' --activationkey '{{ bootstrap_activationkey }}' --operatingsystem '{{ set_os }}'  --download-method {{ bootstrap_download_method }}"
     bootstrap_foreman_args: "{% if satellite_password != '' %}--login '{{ satellite_username }}' --password '{{ satellite_password }}' --hostgroup '{{ bootstrap_hostgroup }}'{% else %}--skip foreman{% endif %}"
+  when: inventory_hostname != satellite_fqdn
   no_log: true
 
 - name: run bootstrap.py with extra args
@@ -34,7 +40,7 @@
 
 - name: run bootstrap.py
   command: "python {{ bootstrap_target_path }} {{ bootstrap_args }} {{ bootstrap_foreman_args }}"
-  when: bootstrap_additional_args is not defined and inventory_hostname != satellite_fqdn
+  when: bootstrap_additional_args is not defined
   no_log: true
 
 - name: remove bootstrap.py
@@ -42,5 +48,3 @@
     path: "{{ bootstrap_target_path }}"
     state: absent
 
-- name:
-  setup:

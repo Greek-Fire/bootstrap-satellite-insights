@@ -108,8 +108,12 @@
   register:           os_arg
   
 - setup:
+    gather_subset:
+    - distribution_version
+  when: ( ansible_distribution_major_version is not defined )
+    
 - set_fact:
-    OS:           "{{ ansible_os_family }} {{ ansible_distribution_major_version }}.{{ ansible_distribution_version[2] }}"
+    OS:           "{{ ansible_os_family }} {{ ansible_distribution_version }}"
   
 - block:
   - set_fact:
@@ -117,9 +121,14 @@
       os_hash: 
         name:    "{{ ansible_os_family }}"
         major:   "{{ ansible_distribution_major_version }}"
-        minor:   "{{ ansible_distribution_version[2] }}"
         family:  "{{ ansible_os_family }}"
-
+        minor: |
+          {% if ansible_distribution_version[3] is not defined %}
+            {{  ansible_distribution_version[2] }}
+          {% else %}
+            {{ ansible_distribution_version[2] }}{{ ansible_distribution_version[3] }}
+          {% endif %}
+        
   - name:
     uri:
       url:              "https://{{ satellite_fqdn }}/api/operatingsystems/" 

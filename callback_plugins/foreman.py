@@ -105,7 +105,8 @@ class CallbackModule(CallbackBase):
         #self.FOREMAN_SSL_VERIFY = str(self.get_option('verify_certs'))
         self.USERNAME = os.environ.get('SATELLITE_USERNAME')
         self.PASSWORD = os.environ.get('SATELLITE_PASSWORD')
-        self.FOREMAN_URL = os.environ.get('SATELLITE_URL')
+        self.FOREMAN_URL2 = os.environ.get('SATELLITE_URL')
+        self.FOREMAN_URL = 'https://' + self.FOREMAN_URL2
         self.FOREMAN_SSL_VERIFY = str(os.environ.get('SATELLITE_VERIFY'))
 
         self.verify = self._ssl_verify()
