@@ -28,6 +28,10 @@
     state: present
   register: insight_reg
   
+- name: run insights-client
+  command: insights-client
+  when: ( insight_reg.changed | bool == false )
+  
 - name: Change permissions of Insights Config directory so that Insights System ID can be read
   file:
     path: /etc/insights-client
@@ -50,6 +54,6 @@
     dest: /etc/ansible/facts.d
     mode: a+x
 
-- name: run insights-client
-  command: insights-client
-  when: ( insight_reg.changed | bool == false )
+- setup:
+    gather_subset:
+    - 'facter'

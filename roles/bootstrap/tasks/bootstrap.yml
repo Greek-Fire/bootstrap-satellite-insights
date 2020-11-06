@@ -30,17 +30,19 @@
   set_fact:
     bootstrap_args: "--server {{ satellite_fqdn }} --organization '{{ bootstrap_org }}' --location '{{ bootstrap_location }}' --activationkey '{{ bootstrap_activationkey }}' --operatingsystem '{{ set_os }}'  --download-method {{ bootstrap_download_method }}"
     bootstrap_foreman_args: "{% if satellite_password != '' %}--login '{{ satellite_username }}' --password '{{ satellite_password }}' --hostgroup '{{ bootstrap_hostgroup }}'{% else %}--skip foreman{% endif %}"
-  when: inventory_hostname != satellite_fqdn
+  when: inventory_hostname != satellite_fqdn and 'force' not in bootstrap_additional_args
+  no_log: true
+  
+- name: generate bootstrap.py arguments
+  set_fact:
+    bootstrap_args: "--server {{ satellite_fqdn }} --organization '{{ bootstrap_org }}' --location '{{ bootstrap_location }}' --activationkey '{{ bootstrap_activationkey }}' --operatingsystem '{{ set_os }}' --force --download-method {{ bootstrap_download_method }}"
+    bootstrap_foreman_args: "{% if satellite_password != '' %}--login '{{ satellite_username }}' --password '{{ satellite_password }}' --hostgroup '{{ bootstrap_hostgroup }}'{% else %}--skip foreman{% endif %}"
+  when: inventory_hostname != satellite_fqdn and 'force' in bootstrap_additional_args
   no_log: true
 
 - name: run bootstrap.py with extra args
   command: "python {{ bootstrap_target_path }} {{ bootstrap_args }} {{ bootstrap_foreman_args }} {{ bootstrap_additional_args | join(' ')}}"
-  when: bootstrap_additional_args is defined and inventory_hostname != satellite_fqdn
-  no_log: true
-
-- name: run bootstrap.py
-  command: "python {{ bootstrap_target_path }} {{ bootstrap_args }} {{ bootstrap_foreman_args }}"
-  when: bootstrap_additional_args is not defined
+  when: bootstrap_additional_args | length > 0 and inventory_hostname != satellite_fqdn
   no_log: true
 
 - name: remove bootstrap.py

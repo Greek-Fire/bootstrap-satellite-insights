@@ -39,4 +39,4 @@
     rhsm:         "{{ rhsm_res.content | b64decode | regex_findall(rhsm_fqdn) | length }}"
     katello_cert: "{{ katello_cert_res.results | selectattr('name','defined') | selectattr('name','match', kat_cert) | list | length }}"
     files:        "{{ files_res.stdout_lines }}"
-    files_test:   "{{ files_res.stdout_lines | default([]) | length }}"
+    files_test:   "{{ files_res.stdout_lines | default([]) | length | int }}"
